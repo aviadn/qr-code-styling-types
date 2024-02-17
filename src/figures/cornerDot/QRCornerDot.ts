@@ -25,6 +25,9 @@ export default class QRCornerDot {
       case cornerDotTypes.heart:
         drawFunction = this._drawHeart;
         break;
+      case cornerDotTypes.star:
+        drawFunction = this._drawStar;
+        break;
       case cornerDotTypes.dot:
       default:
         drawFunction = this._drawDot;
@@ -109,5 +112,31 @@ export default class QRCornerDot {
       size: size * (1 + scaleFactor),
       rotation
     });
+  }
+
+  _drawStar({ x, y, size, rotation }: DrawArgs): void {
+    const xmlns = "http://www.w3.org/2000/svg";
+    const star = document.createElementNS(xmlns, "polygon");
+
+    const cx = x + size / 2;
+    const cy = y + size / 2;
+    const r = size / 2;
+
+    const points = [];
+    for (let i = 0; i < 6; i++) {
+      const x = cx + r * Math.cos((i * 2 * Math.PI) / 5 - Math.PI / 2);
+      const y = cy + r * Math.sin((i * 2 * Math.PI) / 5 - Math.PI / 2);
+      points.push(`${x},${y}`);
+    }
+    star.setAttribute("points", points.join(" "));
+
+    this._rotateFigure({
+      x,
+      y,
+      size,
+       draw: () => {
+        this._element = star;
+      }
+     });    
   }
 }
