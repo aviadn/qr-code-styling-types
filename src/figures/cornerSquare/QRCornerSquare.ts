@@ -1,14 +1,19 @@
 import cornerSquareTypes from "../../constants/cornerSquareTypes";
 import { CornerSquareType, DrawArgs, BasicFigureDrawArgs, RotateFigureArgs } from "../../types";
+import { createFlowerSVG } from "../../shapes/createFlowerSVG";
+import { createMarkerSVG } from "../../shapes/createMarkerSVG";
+import { createOneRoundedSVG } from "../../shapes/createOneRoundedSVG";
 
 export default class QRCornerSquare {
   _element?: SVGElement;
   _svg: SVGElement;
   _type: CornerSquareType;
+  _color?: string;
 
-  constructor({ svg, type }: { svg: SVGElement; type: CornerSquareType }) {
+  constructor({ svg, type, color }: { svg: SVGElement; type: CornerSquareType; color?: string }) {
     this._svg = svg;
     this._type = type;
+    this._color = color;
   }
 
   draw(x: number, y: number, size: number, rotation: number): void {
@@ -21,6 +26,18 @@ export default class QRCornerSquare {
         break;
       case cornerSquareTypes.extraRounded:
         drawFunction = this._drawExtraRounded;
+        break;
+      case cornerSquareTypes.flowerIn:
+        drawFunction = this._drawFlowerIn;
+        break;
+      case cornerSquareTypes.flowerOut:
+        drawFunction = this._drawFlowerOut;
+        break;
+      case cornerSquareTypes.marker:
+        drawFunction = this._drawMarker;
+        break;
+      case cornerSquareTypes.oneRounded:
+        drawFunction = this._drawOneRounded;
         break;
       case cornerSquareTypes.dot:
       default:
@@ -130,5 +147,119 @@ export default class QRCornerSquare {
 
   _drawExtraRounded({ x, y, size, rotation }: DrawArgs): void {
     this._basicExtraRounded({ x, y, size, rotation });
+  }
+
+  _basicFlower(args: BasicFigureDrawArgs): void {
+    const { x, y, size, rotation } = args;
+    this._rotateFigure({
+      ...args,
+      draw: () => {
+        const xmlns = "http://www.w3.org/2000/svg";
+
+        // Note! We have to wrap the SVG with a foreignObject element in order to rotate it!!!
+        const foreignObject = document.createElementNS(xmlns, "foreignObject");
+        foreignObject.setAttribute("x", String(x));
+        foreignObject.setAttribute("y", String(y));
+        foreignObject.setAttribute("width", String(size));
+        foreignObject.setAttribute("height", String(size));
+        const rotationDegrees = (rotation * 180) / Math.PI; // Convert radians to degrees
+
+        const cx = x + size / 2;
+        const cy = y + size / 2;
+        // Apply the rotation around the center (cx, cy)
+        const transform = foreignObject.getAttribute("transform") || "";
+        foreignObject.setAttribute("transform", `${transform} rotate(${rotationDegrees},${cx},${cy})`);
+        const svg = createFlowerSVG(size, this._color ?? "black");
+        foreignObject.append(svg);
+
+        // IMPORTANT! For embedded SVG corners: Append to 'this._svg' - NOT to 'this._element' because the latter would be added to a clipPath
+        this._svg.appendChild(foreignObject);
+      }
+    });
+  }
+  _drawFlowerIn({ x, y, size, rotation }: DrawArgs): void {
+    this._basicFlower({
+      x,
+      y,
+      size,
+      rotation
+    });
+  }
+
+  _drawFlowerOut({ x, y, size, rotation }: DrawArgs): void {
+    this._basicFlower({
+      x,
+      y,
+      size,
+      rotation: rotation + Math.PI
+    });
+  }
+
+  _basicMarker(args: BasicFigureDrawArgs): void {
+    const { x, y, size, rotation } = args;
+    this._rotateFigure({
+      ...args,
+      draw: () => {
+        const xmlns = "http://www.w3.org/2000/svg";
+
+        // Note! We have to wrap the SVG with a foreignObject element in order to rotate it!!!
+        const foreignObject = document.createElementNS(xmlns, "foreignObject");
+        foreignObject.setAttribute("x", String(x));
+        foreignObject.setAttribute("y", String(y));
+        foreignObject.setAttribute("width", String(size));
+        foreignObject.setAttribute("height", String(size));
+
+        const svg = createMarkerSVG(size, this._color ?? "black");
+        foreignObject.append(svg);
+
+        // IMPORTANT! For embedded SVG corners: Append to 'this._svg' - NOT to 'this._element' because the latter would be added to a clipPath
+        this._svg.appendChild(foreignObject);
+      }
+    });
+  }
+  _drawMarker({ x, y, size, rotation }: DrawArgs): void {
+    this._basicMarker({
+      x,
+      y,
+      size,
+      rotation
+    });
+  }
+
+  _basicOneRounded(args: BasicFigureDrawArgs): void {
+    const { x, y, size, rotation } = args;
+    this._rotateFigure({
+      ...args,
+      draw: () => {
+        const xmlns = "http://www.w3.org/2000/svg";
+
+        // Note! We have to wrap the SVG with a foreignObject element in order to rotate it!!!
+        const foreignObject = document.createElementNS(xmlns, "foreignObject");
+        foreignObject.setAttribute("x", String(x));
+        foreignObject.setAttribute("y", String(y));
+        foreignObject.setAttribute("width", String(size));
+        foreignObject.setAttribute("height", String(size));
+        const rotationDegrees = (rotation * 180) / Math.PI; // Convert radians to degrees
+
+        const cx = x + size / 2;
+        const cy = y + size / 2;
+        // Apply the rotation around the center (cx, cy)
+        const transform = foreignObject.getAttribute("transform") || "";
+        foreignObject.setAttribute("transform", `${transform} rotate(${rotationDegrees},${cx},${cy})`);
+        const svg = createOneRoundedSVG(size, this._color ?? "black");
+        foreignObject.append(svg);
+
+        // IMPORTANT! For embedded SVG corners: Append to 'this._svg' - NOT to 'this._element' because the latter would be added to a clipPath
+        this._svg.appendChild(foreignObject);
+      }
+    });
+  }
+  _drawOneRounded({ x, y, size, rotation }: DrawArgs): void {
+    this._basicOneRounded({
+      x,
+      y,
+      size,
+      rotation
+    });
   }
 }

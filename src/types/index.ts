@@ -13,8 +13,26 @@ export type DotType =
   | "classy-rounded"
   | "square"
   | "extra-rounded";
-export type CornerDotType = "dot" | "square" | "heart" | "star";
-export type CornerSquareType = "dot" | "square" | "extra-rounded";
+export type CornerDotType =
+  | "dot"
+  | "square"
+  | "heart"
+  | "star"
+  | "polygon5"
+  | "polygon7"
+  | "bezier"
+  | "dropIn"
+  | "dropOut"
+  | "oneRounded";
+export type CornerSquareType =
+  | "dot"
+  | "square"
+  | "extra-rounded"
+  | "flowerIn"
+  | "flowerOut"
+  | "marker"
+  | "extraRounded"
+  | "oneRounded";
 export type FileExtension = "svg" | "png" | "jpeg" | "webp";
 export type GradientType = "radial" | "linear";
 export type DrawType = "canvas" | "svg";

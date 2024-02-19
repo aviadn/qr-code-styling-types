@@ -329,7 +329,11 @@ export default class QRSVG {
       }
 
       if (options.cornersSquareOptions?.type) {
-        const cornersSquare = new QRCornerSquare({ svg: this._element, type: options.cornersSquareOptions.type });
+        const cornersSquare = new QRCornerSquare({
+          svg: this._element,
+          type: options.cornersSquareOptions.type,
+          color: options.cornersSquareOptions.color ?? options.dotsOptions.color
+        });
 
         cornersSquare.draw(x, y, cornersSquareSize, rotation);
 
